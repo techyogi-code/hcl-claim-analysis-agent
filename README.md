@@ -51,18 +51,49 @@ The notebook includes this synthetic example of a lodging claim that exceeds the
 }
 ```
 
+### Example `claim_result` for CLM-003
+
+The lodging limit is $200 per night for two nights. The $500 lodging charge is therefore reduced by $100, leaving $840 approved across the claim.
+
+```json
+{
+  "claim_id": "CLM-003",
+  "decision": "PARTIAL_APPROVE",
+  "total_claimed": 940.0,
+  "approved_amount": 840.0,
+  "deducted_amount": 100.0,
+  "missing_docs": [],
+  "policy_refs": [
+    "POL-CAT-01",
+    "POL-AIR-01",
+    "POL-PD-02",
+    "POL-PD-01",
+    "POL-RCT-01",
+    "POL-APR-02",
+    "POL-TIME-01"
+  ],
+  "confidence": 0.99,
+  "explanation": "The lodging cap is $200 per night for two nights ($400 allowed), so $100 is deducted from the $500 lodging charge. The remaining $840 is within the manager approval tier.",
+  "tools_used": [
+    "lookup_travel_policy",
+    "audit_expense_limits",
+    "check_submission_timeline"
+  ]
+}
+```
 
 ## Sample Outcomes
 
 These illustrative outcomes correspond to the five claims included in the notebook. LLM-generated explanations and policy-reference lists may vary between runs.
 
-| Claim | Scenario | Decision | Claimed | Approved | Deducted |
-| --- | --- | --- | ---: | ---: | ---: |
-| CLM-001 | Compliant conference expenses | APPROVE | $1,110 | $1,110 | $0 |
-| CLM-002 | Spa and minibar expenses | REJECT | $380 | $0 | $380 |
-| CLM-003 | Lodging exceeds nightly cap by $100 | PARTIAL_APPROVE | $940 | $840 | $100 |
-| CLM-004 | Business-class airfare, missing receipt, and amount over $2,000 | MANUAL_REVIEW | $3,000 | $0 | $0 |
-| CLM-005 | Meal claim missing a required receipt | MANUAL_REVIEW | $220 | $0 | $0 |
+| Claim | Scenario | Decision | Claimed | Approved | Deducted | policy_refs |
+| --- | --- | --- | ---: | ---: | ---: | --- |
+| CLM-001 | Compliant conference expenses | APPROVE | $1,110 | $1,110 | $0 | `POL-CAT-01`, `POL-PD-01`, `POL-PD-02`, `POL-APR-02` |
+| CLM-002 | Spa and minibar expenses | REJECT | $380 | $0 | $380 | `POL-CAT-02` |
+| CLM-003 | Lodging exceeds nightly cap by $100 | PARTIAL_APPROVE | $940 | $840 | $100 | `POL-PD-02`, `POL-APR-02` |
+| CLM-004 | Business-class airfare, missing receipt, and amount over $2,000 | MANUAL_REVIEW | $3,000 | $0 | $0 | `POL-AIR-01`, `POL-RCT-02`, `POL-APR-03` |
+| CLM-005 | Meal claim missing a required receipt | MANUAL_REVIEW | $220 | $0 | $0 | `POL-RCT-02` |
+
 
 For manual-review cases, the notebook's decision instructions set the approved and deducted amounts to zero pending review; they are not final reimbursement amounts.
 
